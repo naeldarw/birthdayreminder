@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<form action="/api/birthdays" method="post">
+  <div class="form-group">
+    <label for="exampleInputEmail1">Name</label>
+    <input class="form-control" type="text" placeholder="Enter name" name = "name">
+    <small id="emailHelp1" class="form-text text-muted">Add a friend's birthday to your list.</small>
+  </div>
+  <div class="form-group" style="margin-top:5px;">
+    <label for="exampleInputPassword1">Birthdate</label>
+    <input class="form-control" type="text" placeholder="Enter birth date" name = "birth_date">
+  </div>
+  <div class="form-group" style="margin-top:20px;">
+     <label for="exampleInputEmail1">Name</label>
+     <input class="form-control" type="text" placeholder="Enter name" name = "name_deleted">
+     <small id="emailHelp2" class="form-text text-muted">Delete someone's birthday from your list.</small>
+  </div>
+  <button type="submit" class="btn btn-primary" style="margin-top:7px;">Submit</button>
+</form>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Name</th>
+      <th scope="col">Birthday</th>
+    </tr>
+  </thead>
+  <tbody>
+      <ul>
+        {% for name, birthdate in birthdays %}
+        <tr>
+          <td>{{ name }}</td>
+          <td>{{ birthdate }}</td>
+        </tr>
+        {% endfor %}
+      </ul>
+  </tbody>
+</table>
+</body>
+</html>
