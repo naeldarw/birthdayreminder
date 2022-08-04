@@ -11,6 +11,8 @@ class Website:
         self.images = []
         self.name = ""
         self.birthdays = {"Nael": "15.6.06", "Lea": "2.7.07", "Marc": "3.3.04", "Steph": "4.5.05", "Paul": "5.6.08"}
+        self.tasks_completed = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+
 
 
 website = Website()
@@ -37,7 +39,7 @@ def hello():
 
 @app.route("/advent_of_code")
 def advent_of_code():
-    return 'advent_of_code'
+    return render_template("advent_of_code.html", tasks=website.tasks_completed)
 
 
 @app.route("/advent_of_code/<int:day>")
@@ -71,7 +73,7 @@ def add_birthday():
         del website.birthdays[dic["name_deleted"]]
     return render_template("birthdayreminder.html", birthdays=website.birthdays.items())
 
-    return request.form
+
 
 
 if __name__ == "__main__":
