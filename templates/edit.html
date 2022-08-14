@@ -18,29 +18,6 @@ Birthday Reminder
   </div>
   <button type="submit" class="btn btn-primary" style="margin-top:7px;">Submit</button>
 </form>
-<table class="table">
-  <thead>
-    <tr>
-      <th scope="col">ID</th>
-      <th scope="col">Name</th>
-      <th scope="col">Birthday</th>
-      <th scope="col">Edit</th>
-      <th scope="col">Delete</th>
-    </tr>
-  </thead>
-  <tbody>
-      <ul>
-        {% for dic in birthdays %}
-        <tr>
-          <td>{{ dic["id"] }}</td>
-          <td>{{ dic["name"] }}</td>
-          <td>{{ dic["birthday"] }}</td>
-          <td>✏️</td>
-          <td><a href="{{url_for('delete_birthday', birthday_id=dic['id'])}}">🗑️ </a></td>
-        </tr>
-        {% endfor %}
-      </ul>
-  </tbody>
-</table>
+
 
 {% endblock body %}

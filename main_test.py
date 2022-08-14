@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 import random
 
 app = Flask(__name__)
@@ -10,9 +10,9 @@ class Website:
     def __init__(self):
         self.images = []
         self.name = ""
-        self.birthdays = {"Nael": "15.6.06", "Lea": "2.7.07", "Marc": "3.3.04", "Steph": "4.5.05", "Paul": "5.6.08"}
-        self.tasks_completed = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+        self.birthdays = []
 
+        self.tasks_completed = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
 
 
 website = Website()
@@ -49,31 +49,30 @@ def advent_of_code_day(day):
 
 @app.route("/birthday_reminder")
 def birthday_reminder():
-    return render_template("birthdayreminder.html", birthdays=website.birthdays.items())
+    return render_template("birthdayreminder.html", birthdays=website.birthdays)
 
 
-@app.route("/add_birthday/<string:name>/<string:birthday>")
-def add_birthday_2(name, birthday):
-    website.birthdays[name] = birthday
-    return render_template("birthdayreminder.html", birthdays=website.birthdays.items())
 
-
-@app.route("/delete_birthday/<string:name>")
-def delete_birthday(name):
-    del website.birthdays[name]
-    return render_template("birthdayreminder.html", birthdays=website.birthdays.items())
+@app.route("/delete_birthday/<int:birthday_id>")
+def delete_birthday(birthday_id: int):
+    del website.birthdays[birthday_id]
+    for i in website.birthdays[birthday_id:]:
+        i["id"] -= 1
+    return redirect(url_for("birthday_reminder"))
 
 
 @app.route("/api/birthdays", methods=["POST"])
 def add_birthday():
     dic = request.form
     if dic["name"] != "":
-        website.birthdays[dic["name"]] = dic["birth_date"]
-    elif dic["name_deleted"] != "":
-        del website.birthdays[dic["name_deleted"]]
-    return render_template("birthdayreminder.html", birthdays=website.birthdays.items())
+        if website.birthdays:
+            birthdate_id = website.birthdays[-1]["id"] + 1
+        else:
+            birthdate_id = 0
+        website.birthdays.append(
+            {"id": birthdate_id, "name": dic["name"], 'birthday': dic["birth_date"]})
 
-
+    return render_template("birthdayreminder.html", birthdays=website.birthdays)
 
 
 if __name__ == "__main__":

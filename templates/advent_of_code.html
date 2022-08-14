@@ -1,0 +1,32 @@
+{% extends "frame.html" %}
+
+{% block title %}
+Advent of Code
+{% endblock title %}
+
+
+{% block body %}
+
+
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Tasks completed</th>
+    </tr>
+  </thead>
+  <tbody>
+      <ul>
+        {% for num_comp in tasks %}
+        <tr>
+          <td>{{ num_comp }}</td>
+        </tr>
+        {% endfor %}
+      </ul>
+  </tbody>
+</table>
+
+
+
+
+
+{% endblock body %}
