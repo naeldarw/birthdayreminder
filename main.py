@@ -2,14 +2,31 @@ from flask import Flask, render_template, request, redirect, url_for
 import services.person
 import itertools
 import random
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite3'
 
 counter = itertools.count()
 
 
 # https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
 
+db = SQLAlchemy(app)
+
+class Persons(db.Model):
+    id = db.Column('person_id', db.Integer, primary_key = True)
+    name = db.Column(db.String(100))
+    birthday = db.Column(db.String(100))
+    hobby = db.Column(db.String(100))
+
+    def __init__(self, name, birthday, hobby):
+       self.name = name
+       self.birthday = birthday
+       self.hobby = hobby
+
+db.create_all()
 class Website:
     def __init__(self):
         self.images = []

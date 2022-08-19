@@ -25,3 +25,11 @@ Bootstraps: https://getbootstrap.com/docs/4.0/components/navbar/
 
 ## Flask-Alchemy
 https://pythonbasics.org/flask-sqlalchemy/
+
+
+## Inspect database wih this tool
+https://sqlitebrowser.org/
+
+- Download SQLite Browser and Install
+- Start Flask Application by running main.py (which will create an db.sqlite3 file)
+- Start SQLite Browser, Click open database, navigate to the location of your project and open the db.sqlite3 file
