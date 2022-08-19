@@ -15,12 +15,16 @@ flask run --host=0.0.0.0
 ```
 We have to restart this every time we change the website
 
-## Apply the changes
+## Apply the changes on git
 ```shell script
 git add .
 git commit -m "test"
 git push
 ```
+
+This will update the github repository, and also trigger a new deployment on Heroku.
+
+## Bootstrap
 Bootstraps: https://getbootstrap.com/docs/4.0/components/navbar/
 
 ## Flask-Alchemy
