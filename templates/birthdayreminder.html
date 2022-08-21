@@ -37,12 +37,12 @@ Birthday Reminder
       <ul>
         {% for person in persons %}
         <tr>
-          <td>{{ person["id"] }}</td>
-          <td>{{ person["name"] }}</td>
-          <td>{{ person["birthday"] }}</td>
-          <td>{{ person["hobby"] }}</td>
-          <td><a href="{{url_for('update_person_data', person_id=person['id'])}}">✏</a>️</td>
-          <td><a href="{{url_for('delete_birthday', person_id=person['id'])}}">🗑️ </a></td>
+            <td>{{ person.id }}</td>
+            <td>{{ person.name }}</td>
+            <td>{{ person.birthday }}</td>
+            <td>{{ person.hobby }}</td>
+          <td><a href="{{url_for('update_person_data', person_id=person.id)}}">✏</a>️</td>
+          <td><a href="{{url_for('delete_birthday', person_id=person.id)}}">🗑️ </a></td>
         </tr>
         {% endfor %}
       </ul>

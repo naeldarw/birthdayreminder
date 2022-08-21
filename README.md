@@ -53,3 +53,54 @@ The keys of request.form are the names of your html input fields.
         return redirect(url_for("birthday_reminder"))
 -D for delete: We hold a dictionary of every "person", if we want to delete for instance Nael's entry
 we delete Nael's dictionary.
+
+
+## IaaS / PaaS / SaaS
+
+### IaaS (2-4 EUR/month)
+Infrastructure as a Service
+
+When we order IaaS, we get:
+- Server without any software on it (physical server or VM, running linux)
+- Just a database, and connection details to the database
+
+Example:
+https://www.hetzner.com/
+
+What we have to provide:
+- Server Setup, DB Setup, Application Code, Monitoring, ...
+
+### PaaS (30 EUR/month)
+Platform as a Service
+
+When we order PaaS, we get:
+- Server
+- Possible Database
+- Preinstalled Software, that can run our application
+- Deployment scripts, functions that we can use to deploy
+- some logging and monitoring to start and stop the application
+- possibly: Integration with git
+
+Example:
+https://www.heroku.com/
+
+What we have to provide:
+- Application Code, that can be run by the PaaS
+
+### SaaS
+Software as a Service
+
+When we order SaaS, we get:
+- Server
+- Application which is started
+
+What we have to provide:
+- Just go on the Website and use it
+- Just use the API that is given by the application
+
+Example:
+- Birthday Reminder
+- https://play.google.com/store/apps/details?id=com.ornior.energy.finder
+
+How to make money with your SaaS project
+

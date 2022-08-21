@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask, render_template, request, redirect, url_for
 import services.person
 import itertools
@@ -6,35 +8,36 @@ from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite3'
+db_url = os.getenv("DATABASE_URL", "sqlite:///db.sqlite3").replace("postgres://", "postgresql://", 1)
+app.config['SQLALCHEMY_DATABASE_URI'] = db_url
 
 counter = itertools.count()
-
 
 # https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
 
 db = SQLAlchemy(app)
 
+
 class Persons(db.Model):
-    id = db.Column('person_id', db.Integer, primary_key = True)
+    id = db.Column('person_id', db.Integer, primary_key=True)
     name = db.Column(db.String(100))
     birthday = db.Column(db.String(100))
     hobby = db.Column(db.String(100))
 
     def __init__(self, name, birthday, hobby):
-       self.name = name
-       self.birthday = birthday
-       self.hobby = hobby
+        self.name = name
+        self.birthday = birthday
+        self.hobby = hobby
+
 
 db.create_all()
+
+
 class Website:
     def __init__(self):
         self.images = []
         self.name = ""
-        self.persons = [
-            {"id": 12, "name": "Peter", 'hobby': 'skiiing', 'birthday': "2022-01-01"},
-            {"id": 2301, "name": "Jaquelle", 'hobby': 'mathematics', 'birthday': "1980-10-10"}
-        ]
+        self.persons = []
 
         self.tasks_completed = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
 
@@ -73,12 +76,12 @@ def advent_of_code_day(day):
 
 @app.route("/birthday_reminder")
 def birthday_reminder():
-    return render_template("birthdayreminder.html", persons=website.persons)
+    return render_template("birthdayreminder.html", persons=Persons.query.all())
 
 
 @app.route("/persons/<int:person_id>/edit", methods=["GET", "POST"])
 def update_person_data(person_id):
-    person = services.person.get_person_by_id(person_id, website.persons)
+    person = Persons.query.get(person_id)
     if request.method == "GET":
         if person is None:
             return redirect(url_for("birthday_reminder"))
@@ -86,13 +89,19 @@ def update_person_data(person_id):
             return render_template("edit.html", person=person)
     elif request.method == "POST":
         data = request.form
-        person.update(data)
+        person.name = data["name"]
+        person.hobby = data["hobby"]
+        person.birthday = data["birthday"]
+        db.session.add(person)
+        db.session.commit()
         return redirect(url_for("birthday_reminder"))
 
 
 @app.route("/delete_birthday/<int:person_id>")
 def delete_birthday(person_id: int):
-    website.persons = [bd for bd in website.persons if bd["id"] != person_id]
+    person = Persons.query.get(person_id)
+    db.session.delete(person)
+    db.session.commit()
     return redirect(url_for("birthday_reminder"))
 
 
@@ -100,12 +109,8 @@ def delete_birthday(person_id: int):
 def add_birthday():
     dic = request.form
     if dic["name"] != "":
-        new_id = next(counter)
-        while new_id in {bd["id"] for bd in website.persons}:
-            new_id = next(counter)
-
-        website.persons.append(
-            {"id": new_id, "name": dic["name"], 'birthday': dic["birthday"], 'hobby': dic["hobby"]})
+        db.session.add(Persons(dic["name"], dic["birthday"], dic["hobby"]))
+        db.session.commit()
 
     return redirect(url_for("birthday_reminder"))
 
