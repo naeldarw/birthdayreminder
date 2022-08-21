@@ -1,7 +1,7 @@
 import os
 
 from flask import Flask, render_template, request, redirect, url_for
-import services.person
+
 import itertools
 import random
 from flask_sqlalchemy import SQLAlchemy
