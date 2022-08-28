@@ -29,6 +29,9 @@ class Persons(db.Model):
         self.birthday = birthday
         self.hobby = hobby
 
+    def toStr(self):
+        return f"Persons({self.name}, {self.birthday}, {self.hobby})"
+
 
 db.create_all()
 
@@ -76,6 +79,8 @@ def advent_of_code_day(day):
 
 @app.route("/birthday_reminder")
 def birthday_reminder():
+    # TODO: @Nael: return the list in a sorted way, and not just all elements we know
+
     return render_template("birthdayreminder.html", persons=Persons.query.all())
 
 
