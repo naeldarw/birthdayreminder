@@ -1,4 +1,6 @@
 import os
+import util.sorting
+import datetime
 
 from flask import Flask, render_template, request, redirect, url_for
 
@@ -29,7 +31,7 @@ class Persons(db.Model):
         self.birthday = birthday
         self.hobby = hobby
 
-    def toStr(self):
+    def __repr__(self):
         return f"Persons({self.name}, {self.birthday}, {self.hobby})"
 
 
@@ -80,8 +82,10 @@ def advent_of_code_day(day):
 @app.route("/birthday_reminder")
 def birthday_reminder():
     # TODO: @Nael: return the list in a sorted way, and not just all elements we know
-
-    return render_template("birthdayreminder.html", persons=Persons.query.all())
+    persons = list(Persons.query.all())
+    curr_date = datetime.date.today()
+    persons = util.sorting.sort_persons_by_upcoming_birthday(persons, curr_date.strftime('%Y-%m-%d'))
+    return render_template("birthdayreminder.html", persons=persons)
 
 
 @app.route("/persons/<int:person_id>/edit", methods=["GET", "POST"])

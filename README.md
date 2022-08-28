@@ -1,7 +1,8 @@
-g# birthdayreminder
+# birthdayreminder
 
 ## Flask documentation
-https://flask.palletsprojects.com/en/2.1.x/
+- https://flask.palletsprojects.com/en/2.1.x/
+- https://flask-sqlalchemy.palletsprojects.com/en/2.x/
 
 ## Start it locally
 
