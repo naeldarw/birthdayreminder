@@ -1,6 +1,6 @@
 from typing import List
 import datetime
-from main import Persons
+
 
 
 def days_left(birthdate: str, current_date: str) -> int:
@@ -19,7 +19,7 @@ def days_left(birthdate: str, current_date: str) -> int:
 
 
 
-def sort_persons_by_upcoming_birthday(persons: List[Persons], current_date: str) -> List[Persons]:
+def sort_persons_by_upcoming_birthday(persons: List, current_date: str) -> List:
     """Sort the persons by the number of days needed to reach their birthday,
 
     :param persons:

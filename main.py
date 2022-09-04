@@ -2,6 +2,8 @@ import os
 import util.sorting
 import datetime
 
+from flask_migrate import Migrate
+
 from flask import Flask, render_template, request, redirect, url_for
 
 import itertools
@@ -19,6 +21,8 @@ counter = itertools.count()
 
 db = SQLAlchemy(app)
 
+migrate = Migrate(app, db)
+
 
 class Persons(db.Model):
     id = db.Column('person_id', db.Integer, primary_key=True)
@@ -35,7 +39,7 @@ class Persons(db.Model):
         return f"Persons({self.name}, {self.birthday}, {self.hobby})"
 
 
-db.create_all()
+#db.create_all()
 
 
 class Website:

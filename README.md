@@ -105,3 +105,53 @@ Example:
 
 How to make money with your SaaS project
 
+
+SQL Code:
+
+SELECT * 
+FROM Participants 
+WHERE Participants.Vegetarian='Vegetarian';
+
+
+SELECT * 
+FROM Artist
+WHERE Artist.Name='Aerosmith';
+
+
+SELECT ArtistId, Name
+FROM Artist
+WHERE Artist.Name='Aerosmith';
+
+
+SELECT ArtistId, Name
+FROM Artist
+WHERE Artist.Name LIKE 'A%';
+
+
+SELECT *
+FROM Invoice
+WHERE Invoice.BillingCountry='USA' AND Invoice.Total>15;
+
+
+Select DISTINCT BillingCountry
+FROM Invoice;
+
+
+Select max(total)
+FROM Invoice;
+
+
+SELECT  DISTINCT Title
+FROM Album 
+WHERE Album.ArtistId = '1' ;
+
+SELECT Album.Title, Artist.Name
+FROM Album
+INNER JOIN Artist ON Album.ArtistId = Artist.ArtistId ;
+
+
+SELECT Album.Title, Artist.Name
+FROM Album
+INNER JOIN Artist ON Album.ArtistId = Artist.ArtistId ;
+
+C:\Code\github.com\naeldarw
