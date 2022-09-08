@@ -4,11 +4,15 @@ import datetime
 
 from flask_migrate import Migrate
 
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, make_response
 
+import uuid
 import itertools
 import random
 from flask_sqlalchemy import SQLAlchemy
+
+LOGIN_COOKIE_KEY='BIRTHDAY-REMINDER-LOGIN-TOKEN'
+MAX_COOKIE_LOGIN_VALIDITY=datetime.timedelta(days=1)
 
 app = Flask(__name__)
 
@@ -21,25 +25,42 @@ counter = itertools.count()
 
 db = SQLAlchemy(app)
 
-migrate = Migrate(app, db)
+migrate = Migrate(app, db, render_as_batch=True)
+
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
+    login_token = db.Column(db.String(200), nullable=True)
+    last_login_time = db.Column(db.DateTime(), nullable=True)
+    persons = db.relationship('Persons', backref='user', lazy=True)
+
+    def __init__(self, name, session_token, login_time):
+        self.name = name
+        self.login_token = session_token
+        self.last_login_time = login_time
 
 
 class Persons(db.Model):
     id = db.Column('person_id', db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'),
+                        nullable=False)
     name = db.Column(db.String(100))
     birthday = db.Column(db.String(100))
     hobby = db.Column(db.String(100))
+    email = db.Column(db.String(100))
 
-    def __init__(self, name, birthday, hobby):
+    def __init__(self, name, birthday, hobby, email):
         self.name = name
         self.birthday = birthday
         self.hobby = hobby
+        self.email = email
 
     def __repr__(self):
-        return f"Persons({self.name}, {self.birthday}, {self.hobby})"
+        return f"Persons({self.name}, {self.birthday}, {self.hobby}, {self.email})"
 
 
-#db.create_all()
+# db.create_all()
 
 
 class Website:
@@ -86,10 +107,19 @@ def advent_of_code_day(day):
 @app.route("/birthday_reminder")
 def birthday_reminder():
     # TODO: @Nael: return the list in a sorted way, and not just all elements we know
-    persons = list(Persons.query.all())
+
+    cookie_login_token = request.cookies.get(LOGIN_COOKIE_KEY)
+    _1day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
+    user = User.query.filter(User.login_token == cookie_login_token).filter(User.last_login_time > _1day_ago).first()
+    # if login is expired, send the user back to register
+    if not user:
+        return redirect(url_for("register"))
+
+    # if user is logged in, get the users persons to be listed
+    persons = list(user.persons)
     curr_date = datetime.date.today()
     persons = util.sorting.sort_persons_by_upcoming_birthday(persons, curr_date.strftime('%Y-%m-%d'))
-    return render_template("birthdayreminder.html", persons=persons)
+    return render_template("birthdayreminder.html", username=user.name, persons=persons)
 
 
 @app.route("/persons/<int:person_id>/edit", methods=["GET", "POST"])
@@ -118,11 +148,54 @@ def delete_birthday(person_id: int):
     return redirect(url_for("birthday_reminder"))
 
 
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    # https://pythonbasics.org/flask-cookies/
+    if request.method == "POST":
+        dic = request.form
+
+        session_token = str(uuid.uuid4())
+        login_time = datetime.datetime.now()
+
+        user = User.query.filter(User.name == dic["name"]).first()
+        if not user:
+            db.session.add(User(dic["name"], session_token, login_time))
+            db.session.commit()
+        else:
+            user.login_token = session_token
+            user.login_time = login_time
+            db.session.add(user)
+            db.session.commit()
+
+        resp = make_response(redirect(url_for("birthday_reminder")))
+        resp.set_cookie(
+            LOGIN_COOKIE_KEY,
+            session_token,
+            max_age=MAX_COOKIE_LOGIN_VALIDITY,
+            expires=login_time+MAX_COOKIE_LOGIN_VALIDITY
+        )
+
+        return resp
+
+    elif request.method == "GET":
+        return render_template("register.html")
+
 @app.route("/api/birthdays", methods=["POST"])
 def add_birthday():
     dic = request.form
+
+    cookie_login_token = request.cookies.get(LOGIN_COOKIE_KEY)
+    _1day_ago = datetime.datetime.now() - datetime.timedelta(days=1)
+    user = User.query.filter(User.login_token == cookie_login_token).filter(User.last_login_time > _1day_ago).first()
+    # if login is expired, send the user back to register
+    if not user:
+        return redirect(url_for("register"))
+
     if dic["name"] != "":
-        db.session.add(Persons(dic["name"], dic["birthday"], dic["hobby"]))
+        new_person = Persons(dic["name"], dic["birthday"], dic["hobby"], "")
+        new_person.user_id = user.id
+
+        db.session.add(new_person)
         db.session.commit()
 
     return redirect(url_for("birthday_reminder"))

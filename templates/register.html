@@ -1,0 +1,24 @@
+{% extends "frame.html" %}
+
+{% block title %}
+Register Process
+{% endblock title %}
+
+
+{% block body %}
+
+
+<form method="post">
+  <div class="form-group">
+    <label for="name">Name</label>
+    <input id = "name" class="form-control" type="text" placeholder="Enter name" name = "name">
+    <small class="form-text text-muted">Enter your name to register.</small>
+  </div>
+  <button type="submit" class="btn btn-primary" style="margin-top:7px;">Register</button>
+</form>
+
+
+
+
+
+{% endblock body %}

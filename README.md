@@ -155,3 +155,39 @@ FROM Album
 INNER JOIN Artist ON Album.ArtistId = Artist.ArtistId ;
 
 C:\Code\github.com\naeldarw
+
+FLASK MIGRATION INFORMATION:
+https://flask-migrate.readthedocs.io/en/latest/index.html
+!!! Make sure to: set FLASK_APP=main.py
+
+Many-to-one relationship:
+https://flask-sqlalchemy.palletsprojects.com/en/2.x/models/#one-to-many-relationships
+
+FLASK MIGRATE:
+
+-Flak Migrate is a package that allows us to upgrade our database's version. For instance, 
+if we want to add an "email" column, we make the necessary changes in the python, and then we use
+Flask Migrate to add an "email" column to the database, without creating a scratch data base(we keep our previous data).
+
+-First, we write migrate = Migrate(app, db, render_as_batch=True) in the python, to connect the app to our database.
+Then, with "flask db init", on the terminal, we create a "migrations" repository. After adding the python code
+for the "email column", we make flask db migrate -m "Initial migration.", on the terminal to initialize the change.
+On the "versions" repository from migrations, we'll see our initial python file with an upgrade function and a downgrade function.
+We make "flask db upgrade", on the terminal to upgrade the change.(We will see a new "email" column in our database.)
+
+-TO RESUME the terminal commands: 1. flask db migrate -m "Initial migration."
+2. "flask db upgrade" and to create the migrations repository: "flask db init"
+
+IMPLEMENTATION OF MANY TO ONE(ONE USER AND MANY "PERSONS" CLASSES, that have birthdays):
+-Our "User" class will have a global variable "persons": persons = db.relationship('Persons', backref='user', lazy=True,
+will connect to the 'Persons' class, which will have a foreign key: user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False),
+so each time a user will add a person's birthday, it will be added to the database, and will have
+a "user_id" column, which is user.id, so the person's id. And we'll be able to access all the person's birthdays
+the user has added through Persons.user_id.
+
+COOKIES:
+-We use cookies to who is the user (that is registered) is using the app, or if he needs to register.
+-Only one cookie at a time, on the same browser.
+-After one day, the cookie is deleted, the data stays, so when the user logs
+in again, he finds back his data. One day after the login time, the user needs to 
+log in again.
