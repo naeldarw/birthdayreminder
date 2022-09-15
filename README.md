@@ -163,7 +163,7 @@ https://flask-migrate.readthedocs.io/en/latest/index.html
 Many-to-one relationship:
 https://flask-sqlalchemy.palletsprojects.com/en/2.x/models/#one-to-many-relationships
 
-FLASK MIGRATE:
+**FLASK MIGRATE:**
 
 -Flak Migrate is a package that allows us to upgrade our database's version. For instance, 
 if we want to add an "email" column, we make the necessary changes in the python, and then we use
@@ -187,7 +187,34 @@ the user has added through Persons.user_id.
 
 COOKIES:
 -We use cookies to who is the user (that is registered) is using the app, or if he needs to register.
--Only one cookie at a time, on the same browser.
+-Only one cookie at a time, on the same browser.(the last one sent.)
 -After one day, the cookie is deleted, the data stays, so when the user logs
 in again, he finds back his data. One day after the login time, the user needs to 
 log in again.
+
+
+**PATRICK SQLITE EXERCISES**:
+- Ex2: 
+SELECT BillingCity, COUNT(InvoiceId)
+FROM Invoice
+GROUP BY BillingCity
+ORDER BY COUNT(InvoiceId) DESC;
+- Ex3: 
+SELECT COUNT(Track.TrackId)
+FROM Track
+WHERE Track.MediaTypeId = '5';
+- Ex4:
+SELECT Artist.Name, COUNT(Album.ArtistId)
+FROM Artist
+INNER JOIN Album ON Album.ArtistId = Artist.ArtistId
+GROUP BY Artist.Name
+ORDER BY COUNT(Album.ArtistId) DESC;
+- Ex5:
+SELECT Track.GenreId, COUNT(Track.TrackId)
+FROM Track
+GROUP BY Track.GenreId
+ORDER BY COUNT(Track.TrackId) DESC;
+- Ex6:
+SELECT Invoice.CustomerId, Invoice.Total
+FROM Invoice
+ORDER BY Invoice.Total DESC;

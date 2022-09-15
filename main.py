@@ -11,10 +11,22 @@ import itertools
 import random
 from flask_sqlalchemy import SQLAlchemy
 
-LOGIN_COOKIE_KEY='BIRTHDAY-REMINDER-LOGIN-TOKEN'
-MAX_COOKIE_LOGIN_VALIDITY=datetime.timedelta(days=1)
+from flask_mail import Mail, Message
 
 app = Flask(__name__)
+
+# EMAIL SETTINGS
+mail = Mail(app)
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USERNAME'] = 'birthdayreminder321@gmail.com'
+app.config['MAIL_PASSWORD'] = 'Birthday123'
+app.config['MAIL_USE_TLS'] = False
+app.config['MAIL_USE_SSL'] = True
+
+# APP, COOKIE AND DB SETTINGS
+LOGIN_COOKIE_KEY = 'BIRTHDAY-REMINDER-LOGIN-TOKEN'
+MAX_COOKIE_LOGIN_VALIDITY = datetime.timedelta(days=1)
 
 db_url = os.getenv("DATABASE_URL", "sqlite:///db.sqlite3").replace("postgres://", "postgresql://", 1)
 app.config['SQLALCHEMY_DATABASE_URI'] = db_url
@@ -31,12 +43,14 @@ migrate = Migrate(app, db, render_as_batch=True)
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
+    email = db.Column(db.String(50), nullable=True)
     login_token = db.Column(db.String(200), nullable=True)
     last_login_time = db.Column(db.DateTime(), nullable=True)
     persons = db.relationship('Persons', backref='user', lazy=True)
 
-    def __init__(self, name, session_token, login_time):
+    def __init__(self, email, name, session_token, login_time):
         self.name = name
+        self.email = email
         self.login_token = session_token
         self.last_login_time = login_time
 
@@ -50,7 +64,7 @@ class Persons(db.Model):
     hobby = db.Column(db.String(100))
     email = db.Column(db.String(100))
 
-    def __init__(self, name, birthday, hobby, email):
+    def __init__(self, email, name, birthday, hobby):
         self.name = name
         self.birthday = birthday
         self.hobby = hobby
@@ -172,13 +186,14 @@ def register():
             LOGIN_COOKIE_KEY,
             session_token,
             max_age=MAX_COOKIE_LOGIN_VALIDITY,
-            expires=login_time+MAX_COOKIE_LOGIN_VALIDITY
+            expires=login_time + MAX_COOKIE_LOGIN_VALIDITY
         )
 
         return resp
 
     elif request.method == "GET":
         return render_template("register.html")
+
 
 @app.route("/api/birthdays", methods=["POST"])
 def add_birthday():
@@ -192,7 +207,7 @@ def add_birthday():
         return redirect(url_for("register"))
 
     if dic["name"] != "":
-        new_person = Persons(dic["name"], dic["birthday"], dic["hobby"], "")
+        new_person = Persons(dic["email"], dic["name"], dic["birthday"], dic["hobby"])
         new_person.user_id = user.id
 
         db.session.add(new_person)
